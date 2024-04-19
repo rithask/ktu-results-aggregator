@@ -1,0 +1,7 @@
+.env
+log/
+node_modules/
+compose/
+requests
+access.log
+.DS_Store
