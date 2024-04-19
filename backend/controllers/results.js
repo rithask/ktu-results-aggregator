@@ -16,6 +16,7 @@ resultsRouter.post('/', async (request, response) => {
 
     try {
         const examDefIds = await ExamDefId.findOne({ batchYear })
+        const allExamDefIds = await AllResults.find({ program: "B.Tech" })
         if (examDefIds === null) {
             let examDefIdFound = []
             const results = []
@@ -75,7 +76,7 @@ resultsRouter.post('/', async (request, response) => {
                     console.log(error);
                 }
             }
-            const cleanedData = helper.cleanData(results)
+            const cleanedData = helper.cleanData(results, allExamDefIds)
             response.json(cleanedData)
         }
     } catch (error) {
@@ -116,7 +117,7 @@ resultsRouter.post('/update', async (request, response) => {
                     // console.log(cleanedData)
                     response.status(200).json(cleanedData)
                 } else {
-                    response.status(400).json({ error: 'no data found' })
+                    // response.status(400).json({ error: 'no data found' })
                 }
             } catch (error) {
                 console.log(error);

@@ -12,11 +12,12 @@ const extractBatch = (registerNo) => {
   return year
 }
 
-const cleanData = (data) => {
+const cleanData = (data, allExamDefIds) => {
   if (!data.length) return { error: 'data is empty' };
 
   const semesters = []
   data.forEach(sem => {
+    const filteredAllExamDefIds = allExamDefIds.filter(item => item.semester === sem.semesterName)[0].examDefId
     const results = []
     sem.resultDetails.forEach(element => {
       let x = {
@@ -26,7 +27,6 @@ const cleanData = (data) => {
       }
       results.push(x)
     })
-    results.find((item) => item.grade === "F") ? completed = false : completed = true
     const semesterDetails = {
       semester: sem.semesterName,
       examDefId: sem.resultDetails[0].examDefId,
@@ -35,9 +35,12 @@ const cleanData = (data) => {
       examYear: sem.examYear,
       sgpa: calculateSgpa(results, getAllottedCredits(sem.semesterName)),
       allotedCredits: getAllottedCredits(sem.semesterName),
-      completed,
       results
     }
+    results.some(item => item.grade === "F") && filteredAllExamDefIds.some(id => Number(id) > semesterDetails.examDefId) 
+      ? semesterDetails.completed = false 
+      : semesterDetails.completed = true
+
     const existingSemester = semesters.find((item) => item.semester === semesterDetails.semester)
     if (!existingSemester) {
         semesters.push(semesterDetails)
