@@ -8,3 +8,6 @@ services:
       - "3001:3001"
     volumes:
       - ./compose/logs:/usr/src/app/log
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - MONGODB_URI=paste_your_mongodb_uri_here
