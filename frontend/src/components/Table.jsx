@@ -9,17 +9,6 @@ const Table = ({ data, updateSemester }) => {
   if (!personalDetails || !semesters) {
     return null
   }
-
-  // const failedSemesters = []
-  // semesters.forEach(semester => {
-  //   for (const result of semester.results) {
-  //     if (result.grade === "F") {
-  //       if (!(failedSemesters.includes(semester.examDefId))) {
-  //         failedSemesters.push(semester.examDefId)
-  //       }
-  //     }
-  //   }
-  // })
   
   return (
     <div className={styles.table}>

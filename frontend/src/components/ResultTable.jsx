@@ -3,8 +3,6 @@ const ResultTable = ({ result, updateSemester }) => {
     return null
   }
 
-  console.log(result);
-
   return (
     <div>
       <div>

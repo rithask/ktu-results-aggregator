@@ -36,7 +36,6 @@ const Form = () => {
     resultService.updateResults(registerNo, semester, examDefId, results)
       .then(response => {
         const newResults = response.data
-        // console.log(newResults);
         setResults(newResults)
       })
   }
