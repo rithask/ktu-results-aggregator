@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: ktu-grade-aggregator
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./compose/logs:/usr/src/app/log
