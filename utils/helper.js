@@ -26,6 +26,7 @@ const cleanData = (data) => {
       }
       results.push(x)
     })
+    results.find((item) => item.grade === "F") ? completed = false : completed = true
     const semesterDetails = {
       semester: sem.semesterName,
       examDefId: sem.resultDetails[0].examDefId,
@@ -34,6 +35,7 @@ const cleanData = (data) => {
       examYear: sem.examYear,
       sgpa: calculateSgpa(results, getAllottedCredits(sem.semesterName)),
       allotedCredits: getAllottedCredits(sem.semesterName),
+      completed,
       results
     }
     const existingSemester = semesters.find((item) => item.semester === semesterDetails.semester)
@@ -46,7 +48,6 @@ const cleanData = (data) => {
         
         // If result already exists, update it
         if (existingResultIndex !== -1) {
-          result.supply = true;
           existingSemester.results[existingResultIndex] = result;
         } else {
           // If result doesn't exist, add it to existing semester
@@ -96,11 +97,12 @@ const cleanSupplyData = (newData, oldData) => {
       newResults.forEach(newResult => {
         oldSemester.results.forEach(oldResult => {
           if (oldResult.course === newResult.course) {
-            if (oldResult.grade !== newResult.grade) {
+            if (newResult.grade !== "F") {
               oldResult.grade = newResult.grade
               oldResult.credit = newResult.credit
               oldSemester.sgpa = calculateSgpa(oldSemester.results, oldSemester.allotedCredits)
               oldData.personalDetails.cgpa = calculateCgpa(oldData.semesters)
+              oldSemester.completed = true
             }
           }
         })
