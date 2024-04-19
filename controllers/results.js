@@ -83,4 +83,47 @@ resultsRouter.post('/', async (request, response) => {
     }
 })
 
+resultsRouter.post('/update', async (request, response) => {
+    const { registerNo, semester, examDefId, oldResult } = request.body
+    if (registerNo === '' || registerNo === undefined) {
+        return response.status(400).json({ error: 'register number is missing' })
+    }
+    if (semester === '' || semester === undefined) {
+        return response.status(400).json({ error: 'semester is missing' })
+    }
+    if (examDefId === '' || examDefId === undefined) {
+        return response.status(400).json({ error: 'examDefId is missing' })
+    }
+
+    var fetchedExamDefIds = await AllResults.findOne({ semester, program: "B.Tech" });
+    for (const id of fetchedExamDefIds.examDefId) {
+        if (id > examDefId) {
+            try {
+                const body = {
+                    registerNo: registerNo,
+                    dob: "",
+                    examDefId: String(id),
+                    schemeId: '1'
+                }
+                const apiResponse = await fetch(RESULT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: {'Content-Type': 'application/json'}
+                })
+                const data = await apiResponse.json()
+                if (apiResponse.status === 200) {
+                    const cleanedData = helper.cleanSupplyData(data, oldResult)
+                    // console.log(cleanedData)
+                    response.status(200).json(cleanedData)
+                } else {
+                    response.status(400).json({ error: 'no data found' })
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+    return null;
+})
+
 module.exports = resultsRouter

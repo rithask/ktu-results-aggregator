@@ -24,7 +24,7 @@ const cleanData = (data) => {
         grade: element.grade,
         credit: element.credits
       }
-      results.push(x);
+      results.push(x)
     })
     const semesterDetails = {
       semester: sem.semesterName,
@@ -67,9 +67,48 @@ const cleanData = (data) => {
     college: personalDetails.institutionName,
     cgpa: calculateCgpa(semesters)
   }
-    
+
   const cleanedData = { personalDetails, semesters }
   return cleanedData
+}
+
+const cleanSupplyData = (newData, oldData) => {
+  if (!newData.resultDetails.length) return { error: 'new data is empty' }
+  if (!oldData.semesters.length) return { error: 'old data is empty' }
+
+  const newResults = []
+  for (const result of newData.resultDetails) {
+    let x = {
+      course: result.courseName,
+      grade: result.grade,
+      credit: result.credits
+    }
+    newResults.push(x)
+  }
+
+  const newSemesterDetails = {
+    semester: newData.semesterName,
+    newResults
+  }
+
+  oldData.semesters.forEach(oldSemester => {
+    if (oldSemester.semester === newSemesterDetails.semester) {
+      newResults.forEach(newResult => {
+        oldSemester.results.forEach(oldResult => {
+          if (oldResult.course === newResult.course) {
+            if (oldResult.grade !== newResult.grade) {
+              oldResult.grade = newResult.grade
+              oldResult.credit = newResult.credit
+              oldSemester.sgpa = calculateSgpa(oldSemester.results, oldSemester.allotedCredits)
+              oldData.personalDetails.cgpa = calculateCgpa(oldData.semesters)
+            }
+          }
+        })
+      })
+    }
+  })
+
+  return oldData
 }
 
 const calculateSgpa = (result, credits) => {
@@ -181,6 +220,7 @@ const getAllottedCredits = (sem) => {
 module.exports = {
   extractBatch,
   cleanData,
+  cleanSupplyData,
   calculateSgpa,
   calculateCgpa,
 }
