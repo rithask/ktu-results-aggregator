@@ -76,6 +76,7 @@ resultsRouter.post('/', async (request, response) => {
                     console.log(error);
                 }
             }
+            results.length === 0 && response.status(400).json({ error: 'no data found' })
             const cleanedData = helper.cleanData(results, allExamDefIds)
             response.json(cleanedData)
         }
