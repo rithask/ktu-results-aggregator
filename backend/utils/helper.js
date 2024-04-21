@@ -67,6 +67,7 @@ const cleanData = (data, allExamDefIds) => {
     surName: personalDetails.surName,
     fullName: personalDetails.fullName,
     registerNo: personalDetails.registerNo,
+    dob: personalDetails.resultDetails[0].dateOfBirth,
     branch: personalDetails.branchName,
     college: personalDetails.institutionName,
     cgpa: calculateCgpa(semesters)
@@ -120,7 +121,6 @@ const cleanSupplyData = (newData, oldData) => {
         : oldSemester.completed = true
     }
   })
-  console.log(oldData);
 
   return oldData
 }
