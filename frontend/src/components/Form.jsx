@@ -60,7 +60,7 @@ const Form = () => {
               value={registerNo}
               // value="MAC21CS040"
               placeholder="Register Number"
-              onChange={(e) => setRegisterNo(e.target.value)}
+              onChange={(e) => setRegisterNo(e.target.value.toUpperCase())}
               required
             />
           {/* </label> */}
