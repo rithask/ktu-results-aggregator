@@ -8,6 +8,7 @@ const extractBatch = (registerNo) => {
 
   const year = matches[0]
   if (year.length != 2) return false
+  if (year > new Date().getFullYear().toString().slice(2)) return false
 
   return year
 }
