@@ -92,6 +92,7 @@ const cleanSupplyData = (newData, oldData) => {
 
   const newSemesterDetails = {
     semester: newData.semesterName,
+    examDefId: newData.resultDetails[0].examDefId,
     newResults
   }
 
@@ -105,13 +106,21 @@ const cleanSupplyData = (newData, oldData) => {
               oldResult.credit = newResult.credit
               oldSemester.sgpa = calculateSgpa(oldSemester.results, oldSemester.allotedCredits)
               oldData.personalDetails.cgpa = calculateCgpa(oldData.semesters)
-              oldSemester.completed = true
+              oldSemester.lastExamDefId = newSemesterDetails.examDefId
             }
           }
         })
       })
     }
   })
+  oldData.semesters.forEach(oldSemester => {
+    if (oldSemester.semester === newSemesterDetails.semester) {
+      oldSemester.results.some(item => item.grade === "F") 
+        ? oldSemester.completed = false 
+        : oldSemester.completed = true
+    }
+  })
+  console.log(oldData);
 
   return oldData
 }

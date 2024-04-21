@@ -97,7 +97,9 @@ resultsRouter.post('/update', async (request, response) => {
         return response.status(400).json({ error: 'examDefId is missing' })
     }
 
-    var fetchedExamDefIds = await AllResults.findOne({ semester, program: "B.Tech" });
+    (semester === "S1" || semester === "S2") ? updatedSemester = "S1/S2" : updatedSemester = semester
+    var fetchedExamDefIds = await AllResults.findOne({ semester: updatedSemester, program: "B.Tech" });
+    var cleanedData = ""
     for (const id of fetchedExamDefIds.examDefId) {
         if (id > examDefId) {
             try {
@@ -114,9 +116,7 @@ resultsRouter.post('/update', async (request, response) => {
                 })
                 const data = await apiResponse.json()
                 if (apiResponse.status === 200) {
-                    const cleanedData = helper.cleanSupplyData(data, oldResult)
-                    // console.log(cleanedData)
-                    response.status(200).json(cleanedData)
+                    cleanedData = helper.cleanSupplyData(data, oldResult)
                 } else {
                     // response.status(400).json({ error: 'no data found' })
                 }
@@ -125,7 +125,7 @@ resultsRouter.post('/update', async (request, response) => {
             }
         }
     }
-    return null;
+    response.status(200).json(cleanedData)
 })
 
 module.exports = resultsRouter

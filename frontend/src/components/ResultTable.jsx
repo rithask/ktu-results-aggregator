@@ -7,7 +7,7 @@ const ResultTable = ({ result, updateSemester }) => {
     <div>
       <div>
         <h1>{result.semester}</h1>
-        {!result.completed && <button onClick={() => updateSemester(result.semester, result.examDefId)}>Update</button>}
+        {!result.completed && <button onClick={() => updateSemester(result.semester, result.lastExamDefId || result.examDefId)}>Update</button>}
       </div>
       <p>SGPA: {result.sgpa}</p>
       <table>
