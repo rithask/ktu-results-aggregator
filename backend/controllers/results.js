@@ -96,7 +96,10 @@ resultsRouter.post('/update', async (request, response) => {
     if (examDefId === '' || examDefId === undefined) {
         return response.status(400).json({ error: 'examDefId is missing' })
     }
-
+    if (oldResult === '' || oldResult === undefined) {
+        return response.status(400).json({ error: 'oldResult is missing' })
+    }
+    
     (semester === "S1" || semester === "S2") ? updatedSemester = "S1/S2" : updatedSemester = semester
     var fetchedExamDefIds = await AllResults.findOne({ semester: updatedSemester, program: "B.Tech" });
     var cleanedData = ""
