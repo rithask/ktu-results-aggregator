@@ -128,7 +128,11 @@ resultsRouter.post('/update', async (request, response) => {
             }
         }
     }
-    response.status(200).json(cleanedData)
+    if (cleanedData === "") {
+        return response.status(400).json({ error: 'no data found' })
+    } else {
+        response.status(200).json(cleanedData)
+    }
 })
 
 module.exports = resultsRouter
