@@ -1,5 +1,5 @@
 # Use Node.js version 16 as the base image
-FROM node:16
+FROM node:alpine
 
 # Set the working directory inside the container for the backend
 WORKDIR /usr/src/app
