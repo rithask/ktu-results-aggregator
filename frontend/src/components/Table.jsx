@@ -1,6 +1,6 @@
 import ResultTable from "./ResultTable"
 import styles from '../assets/table.module.css'
-import resultService from '../services/results'
+import Chart from '../components/Chart'
 
 const Table = ({ data, updateSemester }) => {
   const personalDetails = data.personalDetails
@@ -10,6 +10,20 @@ const Table = ({ data, updateSemester }) => {
     return null
   }
   
+  let labels, sgpas, chartData
+  if (data.length !== 0) {
+    labels = data.semesters.map(semester => semester.semester).reverse()
+    sgpas = data.semesters.map(semester => semester.sgpa).reverse()
+    chartData = {
+      labels,
+      datasets: [{
+        label: "SGPA",
+        data: sgpas,
+        borderWidth: 1
+      }]
+    }
+  }
+
   return (
     <div className={styles.table}>
       <div className={styles.student}>
@@ -45,6 +59,8 @@ const Table = ({ data, updateSemester }) => {
           </tbody>
         </table>
       </div>
+      <hr />
+      <Chart semesters={labels} sgpas={sgpas} />
       <hr />
       <div>
         <h2>Semester Details</h2>
