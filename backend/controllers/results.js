@@ -20,7 +20,7 @@ resultsRouter.post('/', async (request, response) => {
         if (examDefIds === null) {
             let examDefIdFound = []
             const results = []
-            for (let i = 500; i < 1050; i++) {
+            for (let i = 0; i < 1500; i++) {
                 try {
                     const body = {
                         registerNo,
