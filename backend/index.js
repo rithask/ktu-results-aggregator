@@ -10,6 +10,11 @@ const rfs = require('rotating-file-stream');
 
 app.use(express.json())
 
+morgan.token('date', function() {
+  var p = new Date().toString().replace(/[A-Z]{3}\+/,'+').split(/ /);
+  return( p[2]+'/'+p[1]+'/'+p[3]+':'+p[4]+' '+p[5] );
+});
+
 var accessLogStream = rfs.createStream('access.log', {
   interval: '1d',
   path: path.join(__dirname, 'log')
