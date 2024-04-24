@@ -1,0 +1,15 @@
+.env
+log/
+node_modules/
+compose/
+requests
+access.log
+.DS_Store
+
+backend/node_modules
+backend/log
+backend/.env
+
+frontend/node_modules
+frontend/dist
+frontend/.env
