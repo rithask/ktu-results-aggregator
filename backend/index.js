@@ -20,6 +20,7 @@ var accessLogStream = rfs.createStream('access.log', {
   path: path.join(__dirname, 'log')
 })
 app.use(morgan('combined', { stream: accessLogStream }))
+app.use(morgan('common'))
 
 app.use(cors())
 app.use(express.static('dist'))
