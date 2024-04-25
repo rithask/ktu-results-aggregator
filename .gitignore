@@ -1,5 +1,5 @@
 .env
-log/
+logs/
 node_modules/
 compose/
 requests
