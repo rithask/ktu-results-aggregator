@@ -2,7 +2,7 @@
 FROM node:alpine
 
 # Set the working directory inside the container for the backend
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/backend
 
 # Create log directory for the backend
 RUN mkdir -p /usr/src/app/log
@@ -28,11 +28,14 @@ RUN npm install
 
 # Build the frontend
 COPY frontend/ ./
-RUN npm run build
+
+# Set the working directory to backend
+WORKDIR /usr/src/app/backend
+
+# Build the frontend
+RUN npm run build:ui
 
 # Expose the necessary port for the backend
 EXPOSE 3001
 
-# Command to start the backend
-WORKDIR /usr/src/app
 CMD ["npm", "start"]
