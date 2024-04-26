@@ -19,7 +19,7 @@ const ResultTable = ({ result, updateSemester }) => {
         </thead>
         <tbody>
           {result.results.map(sub => (
-            <tr key={sub.course} style={{ color: sub.grade === "S" ? "green" : sub.grade === "F" ? "red" : "inherit" }}>
+            <tr key={sub.course} style={{ color: sub.grade === "S" ? "green" : ["F", "AB", "FE"].includes(sub.grade) ? "red" : "inherit" }}>
               <td>{sub.course}</td>
               <td>{sub.grade}</td>
             </tr>
