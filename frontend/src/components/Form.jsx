@@ -5,11 +5,14 @@ import resultService from "../services/results"
 import Table from "./Table"
 import styles from '../assets/styles.module.css'
 import { useAptabase } from "@aptabase/react"
+import useWindowSize from 'react-use/lib/useWindowSize'
+import Confetti from 'react-confetti'
 
 const Form = () => {
   const [registerNo, setRegisterNo] = useState('')
   const [results, setResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const { width, height } = useWindowSize()
 
   const { trackEvent } = useAptabase()
 
@@ -71,6 +74,16 @@ const Form = () => {
       </form>
       ): (
         <div>
+          { results.personalDetails.cgpa > 9.0 ?
+            <Confetti
+              width={width}
+              height={height}
+              recycle={false}
+              numberOfPieces={1000}
+              tweenDuration={20000}
+            />
+            : null
+          }
           <button className={styles.resultButton} onClick={() => {setResults([]); setRegisterNo('');}}>Check another result</button>
           <Table data={results} updateSemester={updateSemester} />
         </div>
