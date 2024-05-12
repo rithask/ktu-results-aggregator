@@ -17,7 +17,7 @@ morgan.token('date', function() {
 
 var accessLogStream = rfs.createStream('access.log', {
   interval: '1d',
-  path: path.join(__dirname, 'log')
+  path: path.join(__dirname, 'logs')
 })
 app.use(morgan('combined', { stream: accessLogStream }))
 app.use(morgan('common'))
@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 })
 
 app.enable('trust proxy');
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3002
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 })
