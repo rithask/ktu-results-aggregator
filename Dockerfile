@@ -2,11 +2,11 @@
 FROM node:alpine
 
 # Set the working directory inside the container for the backend
-WORKDIR /usr/src/app/backend
+WORKDIR /app
 
 # Create log directory for the backend
-RUN mkdir -p /usr/src/app/log
-RUN chmod -R 777 /usr/src/app/log
+RUN mkdir -p /app/logs
+RUN chmod -R 777 /app/logs
 
 # Copy the backend package files to the working directory
 COPY backend/package*.json ./
@@ -18,7 +18,7 @@ RUN npm install --production
 COPY backend/ ./
 
 # Set the working directory for the frontend build
-WORKDIR /usr/src/app/frontend
+WORKDIR /app/frontend
 
 # Copy the frontend package files to the frontend directory
 COPY frontend/package*.json ./
@@ -30,12 +30,12 @@ RUN npm install
 COPY frontend/ ./
 
 # Set the working directory to backend
-WORKDIR /usr/src/app/backend
+WORKDIR /app
 
 # Build the frontend
-RUN npm run build:ui
+RUN npm run build:ui:docker
 
 # Expose the necessary port for the backend
 EXPOSE 3001
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

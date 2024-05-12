@@ -1,11 +1,11 @@
 services:
   app:
-    container_name: ktu-grade-aggregator
-    build: .
+    container_name: ktu-results-aggregator
+    image: ghcr.io/rithask/ktu-results-aggregator:latest
     ports:
       - "3001:3001"
     volumes:
-      - ./logs:/usr/src/app/log
+      - ./logs:/app/logs
     environment:
       - MONGODB_URI=${MONGODB_URI}
       - NODE_ENV=${NODE_ENV:-production}
