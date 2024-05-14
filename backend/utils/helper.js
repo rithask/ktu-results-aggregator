@@ -99,7 +99,10 @@ const cleanSupplyData = (newData, oldData) => {
   }
 
   oldData.semesters.forEach(oldSemester => {
-    if (oldSemester.semester === newSemesterDetails.semester) {
+    if (oldSemester.semester === newSemesterDetails.semester
+      || ((oldSemester.semester === "S1" || oldSemester.semester === "S2")
+        && (newSemesterDetails.semester === "S1" || newSemesterDetails.semester === "S2"))
+    ) {
       newResults.forEach(newResult => {
         oldSemester.results.forEach(oldResult => {
           if (oldResult.course === newResult.course) {
