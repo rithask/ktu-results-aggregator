@@ -9,7 +9,7 @@ const ResultTable = ({ result, updateSemester }) => {
         <h1>{result.semester}</h1>
         {!result.completed && <button onClick={() => updateSemester(result.semester, result.lastExamDefId || result.examDefId)}>Update</button>}
       </div>
-      <p>SGPA: {result.sgpa}</p>
+      <p>SGPA: {result.sgpa.toFixed(2)}</p>
       <table>
         <thead>
           <tr>

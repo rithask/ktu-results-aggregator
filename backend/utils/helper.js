@@ -131,7 +131,7 @@ const calculateSgpa = (result, credits) => {
     sgpa += getGradePoint(course.grade) * course.credit
   })
   sgpa = (sgpa / credits)
-  sgpa = Math.round((sgpa + Number.EPSILON) * 100) / 100
+  // sgpa = Math.round((sgpa + Number.EPSILON) * 100) / 100
 
   return sgpa
 }
@@ -144,7 +144,7 @@ const calculateCgpa = (semesters) => {
     cgpa += sem.sgpa * sem.allotedCredits
   })
   cgpa = (cgpa / total_credits)
-  cgpa = Math.round((cgpa + Number.EPSILON) * 100) / 100
+  // cgpa = Math.round((cgpa + Number.EPSILON) * 100) / 100
 
   return cgpa
 }

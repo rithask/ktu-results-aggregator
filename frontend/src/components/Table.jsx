@@ -54,7 +54,7 @@ const Table = ({ data, updateSemester }) => {
             </tr>
             <tr>
               <td>CGPA</td>
-              <td style={{ color: personalDetails.cgpa >= 7.5 ? "green" : "red" }}>{personalDetails.cgpa}</td>
+              <td style={{ color: personalDetails.cgpa >= 7.5 ? "green" : "red" }}>{personalDetails.cgpa.toFixed(2)}</td>
             </tr>
           </tbody>
         </table>
