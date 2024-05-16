@@ -13,8 +13,16 @@ const extractBatch = (registerNo) => {
   return year
 }
 
+const findScheme = (batchYear) => {
+  if (batchYear >= 19)
+    return 2019
+  else if (batchYear >= 15)
+    return 2015
+}
+
 const cleanData = (data, allExamDefIds) => {
   if (!data.length) return { error: 'data is empty' };
+  const scheme = findScheme(extractBatch(data[0].registerNo))
 
   const semesters = []
   data.forEach(sem => {
@@ -34,8 +42,8 @@ const cleanData = (data, allExamDefIds) => {
       examName: sem.resultName,
       examMonth: sem.examMonth,
       examYear: sem.examYear,
-      sgpa: calculateSgpa(results, getAllottedCredits(sem.semesterName)),
-      allotedCredits: getAllottedCredits(sem.semesterName),
+      sgpa: calculateSgpa(results, getAllottedCredits(sem.semesterName, scheme), scheme),
+      allotedCredits: getAllottedCredits(sem.semesterName, scheme),
       results
     }
     results.some(item => item.grade === "F") && filteredAllExamDefIds.some(id => Number(id) > semesterDetails.examDefId) 
@@ -81,6 +89,7 @@ const cleanData = (data, allExamDefIds) => {
 const cleanSupplyData = (newData, oldData) => {
   if (!newData.resultDetails.length) return { error: 'new data is empty' }
   if (!oldData.semesters.length) return { error: 'old data is empty' }
+  const scheme = findScheme(extractBatch(newData.registerNo))
 
   const newResults = []
   for (const result of newData.resultDetails) {
@@ -109,7 +118,7 @@ const cleanSupplyData = (newData, oldData) => {
             if (newResult.grade !== "F") {
               oldResult.grade = newResult.grade
               oldResult.credit = newResult.credit
-              oldSemester.sgpa = calculateSgpa(oldSemester.results, oldSemester.allotedCredits)
+              oldSemester.sgpa = calculateSgpa(oldSemester.results, oldSemester.allotedCredits, scheme)
               oldData.personalDetails.cgpa = calculateCgpa(oldData.semesters)
               oldSemester.lastExamDefId = newSemesterDetails.examDefId
             }
@@ -123,12 +132,12 @@ const cleanSupplyData = (newData, oldData) => {
   return oldData
 }
 
-const calculateSgpa = (result, credits) => {
+const calculateSgpa = (result, credits, scheme) => {
   if (!result.length) return 0
   var sgpa = 0;
 
   result.forEach(course => {
-    sgpa += getGradePoint(course.grade) * course.credit
+    sgpa += getGradePoint(course.grade, scheme) * course.credit
   })
   sgpa = (sgpa / credits)
   // sgpa = Math.round((sgpa + Number.EPSILON) * 100) / 100
@@ -149,80 +158,147 @@ const calculateCgpa = (semesters) => {
   return cgpa
 }
 
-const getGradePoint = (grade) => {
-  switch (grade) {
-    case "S":
-      gp = 10
-      break;
-    case "A+":
-      gp = 9.0
-      break;
-    case "A":
-      gp = 8.5
-      break;
-    case "B+":
-      gp = 8.0
-      break;
-    case "B":
-      gp = 7.5
-      break;
-    case "C+":
-      gp = 7.0
-      break;
-    case "C":
-      gp = 6.5
-      break;
-    case "D":
-      gp = 6.0
-      break;
-    case "P":
-      gp = 5.5
-      break;
-    case "F":
-      gp = 0
-      break;
-    case "FE":
-      gp = 0
-      break;
-    case "I":
-      gp = 0
-      break;
-    default:
-      break;
+const getGradePoint = (grade, scheme) => {
+  if (scheme === 2019) {
+    switch (grade) {
+      case "S":
+        gp = 10
+        break;
+      case "A+":
+        gp = 9.0
+        break;
+      case "A":
+        gp = 8.5
+        break;
+      case "B+":
+        gp = 8.0
+        break;
+      case "B":
+        gp = 7.5
+        break;
+      case "C+":
+        gp = 7.0
+        break;
+      case "C":
+        gp = 6.5
+        break;
+      case "D":
+        gp = 6.0
+        break;
+      case "P":
+        gp = 5.5
+        break;
+      case "F":
+        gp = 0
+        break;
+      case "FE":
+        gp = 0
+        break;
+      case "I":
+        gp = 0
+        break;
+      default:
+        break;
+    }
+  } else if (scheme === 2015) {
+    switch (grade) {
+      case "O":
+        gp = 10
+        break;
+      case "A+":
+        gp = 9.0
+        break;
+      case "A":
+        gp = 8.5
+        break;
+      case "B+":
+        gp = 8.0
+        break;
+      case "B":
+        gp = 7.0
+        break;
+      case "C":
+        gp = 6.0
+        break;
+      case "P":
+        gp = 5.0
+        break;
+      case "F":
+        gp = 0
+        break;
+      case "FE":
+        gp = 0
+        break;
+      case "I":
+        gp = 0
+        break;
+    }
   }
 
   return gp
 }
 
-const getAllottedCredits = (sem) => {
+const getAllottedCredits = (sem, scheme) => {
   var credits = 0
-  switch (sem) {
-    case "S1":
-      credits = 17
-      break;
-    case "S2":
-      credits = 21
-      break;
-    case "S3":
-      credits = 22
-      break;
-    case "S4":
-      credits = 22
-      break;
-    case "S5":
-      credits = 23
-      break;
-    case "S6":
-      credits = 24
-      break;
-    case "S7":
-      credits = 15
-      break;
-    case "S8":
-      credits = 16
-      break;
-    default:
-      break;
+
+  if (scheme === 2019) {
+    switch (sem) {
+      case "S1":
+        credits = 17
+        break;
+      case "S2":
+        credits = 21
+        break;
+      case "S3":
+        credits = 22
+        break;
+      case "S4":
+        credits = 22
+        break;
+      case "S5":
+        credits = 23
+        break;
+      case "S6":
+        credits = 24
+        break;
+      case "S7":
+        credits = 15
+        break;
+      case "S8":
+        credits = 16
+        break;
+      default:
+        break;
+    }
+  } else if (scheme === 2015) {
+    switch (sem) {
+      case "S1":
+        credits = 24
+        break;
+      case "S2":
+        credits = 23
+        break;
+      case "S3":
+        credits = 24
+        break;
+      case "S4":
+        credits = 23
+        break;
+      case "S5":
+        credits = 23
+        break;
+      case "S6":
+        credits = 23
+        break;
+      case "S7":
+        credits = 22
+        break;
+      case "S8":
+        credits = 18
+        break;
+      default:
+        break;
+    }
   }
 
   return credits
@@ -235,4 +311,5 @@ module.exports = {
   cleanSupplyData,
   calculateSgpa,
   calculateCgpa,
+  findScheme
 }
