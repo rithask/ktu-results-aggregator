@@ -1,6 +1,6 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const resultsRouter = require('express').Router()
-const helper = require('../utils/helper')
+const { extractBatch, cleanData, cleanSupplyData } = require('../utils/helper')
 const RESULT_URL = require('../utils/config').RESULT_URL
 const { AllResults, ExamDefId }  = require('./mongo')
 
@@ -9,7 +9,7 @@ resultsRouter.post('/', async (request, response) => {
     if (registerNo === '' || registerNo === undefined) {
         return response.status(400).json({ error: 'register number is missing' })
     }
-    const batchYear = helper.extractBatch(registerNo)
+    const batchYear = extractBatch(registerNo)
     if (batchYear === undefined || !batchYear) {
         return response.status(400).json({ error: 'invalid register number' })
     }
@@ -50,7 +50,7 @@ resultsRouter.post('/', async (request, response) => {
             })
             newData.save()
 
-            const cleanedData = helper.cleanData(results)
+            const cleanedData = cleanData(results)
             response.json(cleanedData)
         } else {
             const results = []
@@ -77,7 +77,7 @@ resultsRouter.post('/', async (request, response) => {
                 }
             }
             results.length === 0 && response.status(400).json({ error: 'no data found' })
-            const cleanedData = helper.cleanData(results, allExamDefIds)
+            const cleanedData = cleanData(results, allExamDefIds)
             response.json(cleanedData)
         }
     } catch (error) {
@@ -119,7 +119,7 @@ resultsRouter.post('/update', async (request, response) => {
                 })
                 const data = await apiResponse.json()
                 if (apiResponse.status === 200) {
-                    cleanedData = helper.cleanSupplyData(data, oldResult)
+                    cleanedData = cleanSupplyData(data, oldResult)
                 } else {
                     // response.status(400).json({ error: 'no data found' })
                 }
