@@ -1,27 +1,31 @@
-import ResultTable from "./ResultTable"
-import styles from '../assets/table.module.css'
-import Chart from '../components/Chart'
+import ResultTable from "./ResultTable";
+import styles from "../assets/table.module.css";
+import Chart from "../components/Chart";
 
 const Table = ({ data, updateSemester }) => {
-  const personalDetails = data.personalDetails
-  var semesters = data.semesters.sort((a, b) => b.semester.localeCompare(a.semester))
+  const personalDetails = data.personalDetails;
+  var semesters = data.semesters.sort((a, b) =>
+    b.semester.localeCompare(a.semester)
+  );
 
   if (!personalDetails || !semesters) {
-    return null
+    return null;
   }
-  
-  let labels, sgpas, chartData
+
+  let labels, sgpas, chartData;
   if (data.length !== 0) {
-    labels = data.semesters.map(semester => semester.semester).reverse()
-    sgpas = data.semesters.map(semester => semester.sgpa).reverse()
+    labels = data.semesters.map((semester) => semester.semester).reverse();
+    sgpas = data.semesters.map((semester) => semester.sgpa).reverse();
     chartData = {
       labels,
-      datasets: [{
-        label: "SGPA",
-        data: sgpas,
-        borderWidth: 1
-      }]
-    }
+      datasets: [
+        {
+          label: "SGPA",
+          data: sgpas,
+          borderWidth: 1,
+        },
+      ],
+    };
   }
 
   return (
@@ -54,7 +58,12 @@ const Table = ({ data, updateSemester }) => {
             </tr>
             <tr>
               <td>CGPA</td>
-              <td style={{ color: personalDetails.cgpa >= 7.5 ? "green" : "red" }}>{personalDetails.cgpa.toFixed(2)}</td>
+              <td
+                style={{
+                  color: personalDetails.cgpa >= 7.5 ? "green" : "red",
+                }}>
+                {personalDetails.cgpa.toFixed(2)}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -65,13 +74,17 @@ const Table = ({ data, updateSemester }) => {
       <div>
         <h2>Semester Details</h2>
         <div>
-          {semesters.map(sem => (
-            <ResultTable key={sem.semester} result={sem} updateSemester={updateSemester} />
+          {semesters.map((sem) => (
+            <ResultTable
+              key={sem.semester}
+              result={sem}
+              updateSemester={updateSemester}
+            />
           ))}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Table
+export default Table;

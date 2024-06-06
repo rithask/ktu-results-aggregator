@@ -1,63 +1,72 @@
-const axios = require('axios');
-const RESULT_URL = require('../utils/config').RESULT_URL
-const { AllResults } = require('../controllers/mongo')
+const axios = require("axios");
+const RESULT_URL = require("../utils/config").RESULT_URL;
+const { AllResults } = require("../controllers/mongo");
 
 const extractBatch = (registerNo) => {
-  const matches = registerNo.match(/\d+/)
-  if (!matches) return false
+  const matches = registerNo.match(/\d+/);
+  if (!matches) return false;
 
-  const year = matches[0]
-  if (year.length != 2) return false
-  if (year > new Date().getFullYear().toString().slice(2)) return false
+  const year = matches[0];
+  if (year.length != 2) return false;
+  if (year > new Date().getFullYear().toString().slice(2)) return false;
 
-  return year
-}
+  return year;
+};
 
 const findScheme = (batchYear) => {
-  if (batchYear >= 19)
-    return 2019
-  else if (batchYear >= 15)
-    return 2015
-}
+  if (batchYear >= 19) return 2019;
+  else if (batchYear >= 15) return 2015;
+};
 
 const cleanData = (data, allExamDefIds) => {
-  if (!data.length) return { error: 'data is empty' };
-  const scheme = findScheme(extractBatch(data[0].registerNo))
+  if (!data.length) return { error: "data is empty" };
+  const scheme = findScheme(extractBatch(data[0].registerNo));
 
-  const semesters = []
-  data.forEach(sem => {
-    const filteredAllExamDefIds = allExamDefIds.filter(item => item.semester === sem.semesterName)[0].examDefId
-    const results = []
-    sem.resultDetails.forEach(element => {
+  const semesters = [];
+  data.forEach((sem) => {
+    const filteredAllExamDefIds = allExamDefIds.filter(
+      (item) => item.semester === sem.semesterName
+    )[0].examDefId;
+    const results = [];
+    sem.resultDetails.forEach((element) => {
       let x = {
         course: element.courseName,
         grade: element.grade,
-        credit: element.credits
-      }
-      results.push(x)
-    })
+        credit: element.credits,
+      };
+      results.push(x);
+    });
     const semesterDetails = {
       semester: sem.semesterName,
       examDefId: sem.resultDetails[0].examDefId,
       examName: sem.resultName,
       examMonth: sem.examMonth,
       examYear: sem.examYear,
-      sgpa: calculateSgpa(results, getAllottedCredits(sem.semesterName, scheme), scheme),
+      sgpa: calculateSgpa(
+        results,
+        getAllottedCredits(sem.semesterName, scheme),
+        scheme
+      ),
       allotedCredits: getAllottedCredits(sem.semesterName, scheme),
-      results
-    }
-    results.some(item => item.grade === "F") && filteredAllExamDefIds.some(id => Number(id) > semesterDetails.examDefId) 
-      ? semesterDetails.completed = false 
-      : semesterDetails.completed = true
+      results,
+    };
+    results.some((item) => item.grade === "F") &&
+    filteredAllExamDefIds.some((id) => Number(id) > semesterDetails.examDefId)
+      ? (semesterDetails.completed = false)
+      : (semesterDetails.completed = true);
 
-    const existingSemester = semesters.find((item) => item.semester === semesterDetails.semester)
+    const existingSemester = semesters.find(
+      (item) => item.semester === semesterDetails.semester
+    );
     if (!existingSemester) {
-        semesters.push(semesterDetails)
+      semesters.push(semesterDetails);
     } else {
       // Update results of existing semester
       semesterDetails.results.forEach((result) => {
-        const existingResultIndex = existingSemester.results.findIndex((item) => item.course === result.course);
-        
+        const existingResultIndex = existingSemester.results.findIndex(
+          (item) => item.course === result.course
+        );
+
         // If result already exists, update it
         if (existingResultIndex !== -1) {
           existingSemester.results[existingResultIndex] = result;
@@ -65,11 +74,11 @@ const cleanData = (data, allExamDefIds) => {
           // If result doesn't exist, add it to existing semester
           existingSemester.results.push(result);
         }
-      })
+      });
     }
-  })
+  });
 
-  var personalDetails = data[0]
+  var personalDetails = data[0];
   var personalDetails = {
     firstName: personalDetails.firstName,
     middleName: personalDetails.middleName,
@@ -79,123 +88,130 @@ const cleanData = (data, allExamDefIds) => {
     dob: personalDetails.resultDetails[0].dateOfBirth,
     branch: personalDetails.branchName,
     college: personalDetails.institutionName,
-    cgpa: calculateCgpa(semesters)
-  }
+    cgpa: calculateCgpa(semesters),
+  };
 
-  const cleanedData = { personalDetails, semesters }
-  return cleanedData
-}
+  const cleanedData = { personalDetails, semesters };
+  return cleanedData;
+};
 
 const cleanSupplyData = (newData, oldData) => {
-  if (!newData.resultDetails.length) return { error: 'new data is empty' }
-  if (!oldData.semesters.length) return { error: 'old data is empty' }
-  const scheme = findScheme(extractBatch(newData.registerNo))
+  if (!newData.resultDetails.length) return { error: "new data is empty" };
+  if (!oldData.semesters.length) return { error: "old data is empty" };
+  const scheme = findScheme(extractBatch(newData.registerNo));
 
-  const newResults = []
+  const newResults = [];
   for (const result of newData.resultDetails) {
     let x = {
       course: result.courseName,
       grade: result.grade,
-      credit: result.credits
-    }
-    newResults.push(x)
+      credit: result.credits,
+    };
+    newResults.push(x);
   }
 
   const newSemesterDetails = {
     semester: newData.semesterName,
     examDefId: newData.resultDetails[0].examDefId,
-    newResults
-  }
+    newResults,
+  };
 
-  oldData.semesters.forEach(oldSemester => {
-    if (oldSemester.semester === newSemesterDetails.semester
-      || ((oldSemester.semester === "S1" || oldSemester.semester === "S2")
-        && (newSemesterDetails.semester === "S1" || newSemesterDetails.semester === "S2"))
+  oldData.semesters.forEach((oldSemester) => {
+    if (
+      oldSemester.semester === newSemesterDetails.semester ||
+      ((oldSemester.semester === "S1" || oldSemester.semester === "S2") &&
+        (newSemesterDetails.semester === "S1" ||
+          newSemesterDetails.semester === "S2"))
     ) {
-      newResults.forEach(newResult => {
-        oldSemester.results.forEach(oldResult => {
+      newResults.forEach((newResult) => {
+        oldSemester.results.forEach((oldResult) => {
           if (oldResult.course === newResult.course) {
             if (newResult.grade !== "F") {
-              oldResult.grade = newResult.grade
-              oldResult.credit = newResult.credit
-              oldSemester.sgpa = calculateSgpa(oldSemester.results, oldSemester.allotedCredits, scheme)
-              oldData.personalDetails.cgpa = calculateCgpa(oldData.semesters)
-              oldSemester.lastExamDefId = newSemesterDetails.examDefId
+              oldResult.grade = newResult.grade;
+              oldResult.credit = newResult.credit;
+              oldSemester.sgpa = calculateSgpa(
+                oldSemester.results,
+                oldSemester.allotedCredits,
+                scheme
+              );
+              oldData.personalDetails.cgpa = calculateCgpa(oldData.semesters);
+              oldSemester.lastExamDefId = newSemesterDetails.examDefId;
             }
-            oldSemester.completed = true
+            oldSemester.completed = true;
           }
-        })
-      })
+        });
+      });
     }
-  })
+  });
 
-  return oldData
-}
+  return oldData;
+};
 
 const calculateSgpa = (result, credits, scheme) => {
-  if (!result.length) return 0
+  if (!result.length) return 0;
   var sgpa = 0;
 
-  result.forEach(course => {
-    sgpa += getGradePoint(course.grade, scheme) * course.credit
-  })
-  sgpa = (sgpa / credits)
+  result.forEach((course) => {
+    sgpa += getGradePoint(course.grade, scheme) * course.credit;
+  });
+  sgpa = sgpa / credits;
   // sgpa = Math.round((sgpa + Number.EPSILON) * 100) / 100
 
-  return sgpa
-}
+  return sgpa;
+};
 
 const calculateCgpa = (semesters) => {
-  if (!semesters.length) return 0
-  var total_credits = 0, cgpa = 0
-  semesters.forEach(sem => {
-    total_credits += sem.allotedCredits
-    cgpa += sem.sgpa * sem.allotedCredits
-  })
-  cgpa = (cgpa / total_credits)
+  if (!semesters.length) return 0;
+  var total_credits = 0,
+    cgpa = 0;
+  semesters.forEach((sem) => {
+    total_credits += sem.allotedCredits;
+    cgpa += sem.sgpa * sem.allotedCredits;
+  });
+  cgpa = cgpa / total_credits;
   // cgpa = Math.round((cgpa + Number.EPSILON) * 100) / 100
 
-  return cgpa
-}
+  return cgpa;
+};
 
 const getGradePoint = (grade, scheme) => {
   if (scheme === 2019) {
     switch (grade) {
       case "S":
-        gp = 10
+        gp = 10;
         break;
       case "A+":
-        gp = 9.0
+        gp = 9.0;
         break;
       case "A":
-        gp = 8.5
+        gp = 8.5;
         break;
       case "B+":
-        gp = 8.0
+        gp = 8.0;
         break;
       case "B":
-        gp = 7.5
+        gp = 7.5;
         break;
       case "C+":
-        gp = 7.0
+        gp = 7.0;
         break;
       case "C":
-        gp = 6.5
+        gp = 6.5;
         break;
       case "D":
-        gp = 6.0
+        gp = 6.0;
         break;
       case "P":
-        gp = 5.5
+        gp = 5.5;
         break;
       case "F":
-        gp = 0
+        gp = 0;
         break;
       case "FE":
-        gp = 0
+        gp = 0;
         break;
       case "I":
-        gp = 0
+        gp = 0;
         break;
       default:
         break;
@@ -203,69 +219,69 @@ const getGradePoint = (grade, scheme) => {
   } else if (scheme === 2015) {
     switch (grade) {
       case "O":
-        gp = 10
+        gp = 10;
         break;
       case "A+":
-        gp = 9.0
+        gp = 9.0;
         break;
       case "A":
-        gp = 8.5
+        gp = 8.5;
         break;
       case "B+":
-        gp = 8.0
+        gp = 8.0;
         break;
       case "B":
-        gp = 7.0
+        gp = 7.0;
         break;
       case "C":
-        gp = 6.0
+        gp = 6.0;
         break;
       case "P":
-        gp = 5.0
+        gp = 5.0;
         break;
       case "F":
-        gp = 0
+        gp = 0;
         break;
       case "FE":
-        gp = 0
+        gp = 0;
         break;
       case "I":
-        gp = 0
+        gp = 0;
         break;
     }
   }
 
-  return gp
-}
+  return gp;
+};
 
 const getAllottedCredits = (sem, scheme) => {
-  var credits = 0
+  var credits = 0;
 
   if (scheme === 2019) {
     switch (sem) {
       case "S1":
-        credits = 17
+        credits = 17;
         break;
       case "S2":
-        credits = 21
+        credits = 21;
         break;
       case "S3":
-        credits = 22
+        credits = 22;
         break;
       case "S4":
-        credits = 22
+        credits = 22;
         break;
       case "S5":
-        credits = 23
+        credits = 23;
         break;
       case "S6":
-        credits = 24
+        credits = 24;
         break;
       case "S7":
-        credits = 15
+        credits = 15;
         break;
       case "S8":
-        credits = 16
+        credits = 16;
         break;
       default:
         break;
@@ -273,37 +289,36 @@ const getAllottedCredits = (sem, scheme) => {
   } else if (scheme === 2015) {
     switch (sem) {
       case "S1":
-        credits = 24
+        credits = 24;
         break;
       case "S2":
-        credits = 23
+        credits = 23;
         break;
       case "S3":
-        credits = 24
+        credits = 24;
         break;
       case "S4":
-        credits = 23
+        credits = 23;
         break;
       case "S5":
-        credits = 23
+        credits = 23;
         break;
       case "S6":
-        credits = 23
+        credits = 23;
         break;
       case "S7":
-        credits = 22
+        credits = 22;
         break;
       case "S8":
-        credits = 18
+        credits = 18;
         break;
       default:
         break;
     }
   }
 
-  return credits
-}
-
+  return credits;
+};
 
 module.exports = {
   extractBatch,
@@ -311,5 +326,5 @@ module.exports = {
   cleanSupplyData,
   calculateSgpa,
   calculateCgpa,
-  findScheme
-}
+  findScheme,
+};

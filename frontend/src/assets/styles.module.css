@@ -1,82 +1,82 @@
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* height: 100vh; */
-    padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh; */
+  padding: 2rem;
 }
 
 input {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
 label {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 form {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #07f;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #07f;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
 }
 
 .buttonDiv {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .resultButton {
-    background-color: #07f;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 1rem;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-    width: 100%;
+  background-color: #07f;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  width: 100%;
 }
 
 .resultButton:hover {
-    background-color: #333;
-    transition: background-color 0.3s;
+  background-color: #333;
+  transition: background-color 0.3s;
 }
 
 .resultButton:active {
-    transform: scale(0.95);
-    transition: transform 0.1s;
+  transform: scale(0.95);
+  transition: transform 0.1s;
 }
 
 .resultButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .resultButton:focus {
-    outline: none;
+  outline: none;
 }

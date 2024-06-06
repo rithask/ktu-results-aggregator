@@ -1,63 +1,66 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import resultService from "../services/results"
-import Table from "./Table"
-import styles from '../assets/styles.module.css'
-import { useAptabase } from "@aptabase/react"
-import useWindowSize from 'react-use/lib/useWindowSize'
-import Confetti from 'react-confetti'
+import { useState } from "react";
+import resultService from "../services/results";
+import Table from "./Table";
+import styles from "../assets/styles.module.css";
+import { useAptabase } from "@aptabase/react";
+import useWindowSize from "react-use/lib/useWindowSize";
+import Confetti from "react-confetti";
 
 const Form = () => {
-  const [registerNo, setRegisterNo] = useState('')
-  const [results, setResults] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const { width, height } = useWindowSize()
+  const [registerNo, setRegisterNo] = useState("");
+  const [results, setResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { width, height } = useWindowSize();
 
-  const { trackEvent } = useAptabase()
+  const { trackEvent } = useAptabase();
 
   const handleRegisterNo = (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    resultService.getResults(registerNo)
+    e.preventDefault();
+    setIsLoading(true);
+    resultService
+      .getResults(registerNo)
       .then((response) => {
-        setResults(response.data)
-        setIsLoading(false)
-        trackEvent('result_search', { registerNumber: registerNo.toUpperCase(), college: response.data.personalDetails.college })
+        setResults(response.data);
+        setIsLoading(false);
+        trackEvent("result_search", {
+          registerNumber: registerNo.toUpperCase(),
+          college: response.data.personalDetails.college,
+        });
       })
       .catch((error) => {
         if (error.response.status === 400) {
-          alert(error.response.data.error)
+          alert(error.response.data.error);
         } else {
-          alert('An error occurred. Please try again later.')
+          alert("An error occurred. Please try again later.");
         }
-        setIsLoading(false)
-      })
-  }
+        setIsLoading(false);
+      });
+  };
 
   const updateSemester = (semester, examDefId) => {
-    resultService.updateResults(registerNo, semester, examDefId, results)
-      .then(response => {
-        const newResults = response.data
-        setResults(newResults)
-      })
-  }
+    resultService
+      .updateResults(registerNo, semester, examDefId, results)
+      .then((response) => {
+        const newResults = response.data;
+        setResults(newResults);
+      });
+  };
 
   if (isLoading) {
     return (
-      <div className={styles.loading}>
-        Finding results for {registerNo}...
-      </div>
-    )
+      <div className={styles.loading}>Finding results for {registerNo}...</div>
+    );
   }
 
   return (
     <div>
-      { results.length === 0 ? 
-      (<form onSubmit={handleRegisterNo}>
-        <h1>Enter your register number to find results</h1>
-        <div>
-          {/* <label htmlFor="registerNo">Enter your registration number: */}
+      {results.length === 0 ? (
+        <form onSubmit={handleRegisterNo}>
+          <h1>Enter your register number to find results</h1>
+          <div>
+            {/* <label htmlFor="registerNo">Enter your registration number: */}
             <input
               type="text"
               value={registerNo}
@@ -66,15 +69,20 @@ const Form = () => {
               onChange={(e) => setRegisterNo(e.target.value.toUpperCase())}
               required
             />
-          {/* </label> */}
-        </div>
-        <div className={styles.buttonDiv}>
-          <button className={styles.resultButton} type="submit" disabled={isLoading}>Find Results</button>
-        </div>
-      </form>
-      ): (
+            {/* </label> */}
+          </div>
+          <div className={styles.buttonDiv}>
+            <button
+              className={styles.resultButton}
+              type="submit"
+              disabled={isLoading}>
+              Find Results
+            </button>
+          </div>
+        </form>
+      ) : (
         <div>
-          { results.personalDetails.cgpa > 9.0 ?
+          {results.personalDetails.cgpa > 9.0 ? (
             <Confetti
               width={width}
               height={height}
@@ -82,14 +90,20 @@ const Form = () => {
               numberOfPieces={1000}
               tweenDuration={20000}
             />
-            : null
-          }
-          <button className={styles.resultButton} onClick={() => {setResults([]); setRegisterNo('');}}>Check another result</button>
+          ) : null}
+          <button
+            className={styles.resultButton}
+            onClick={() => {
+              setResults([]);
+              setRegisterNo("");
+            }}>
+            Check another result
+          </button>
           <Table data={results} updateSemester={updateSemester} />
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Form
+export default Form;
