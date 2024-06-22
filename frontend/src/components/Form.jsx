@@ -12,6 +12,7 @@ const Form = () => {
   const [registerNo, setRegisterNo] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [dob, setDob] = useState("");
   const { width, height } = useWindowSize();
 
   const { trackEvent } = useAptabase();
@@ -20,7 +21,7 @@ const Form = () => {
     e.preventDefault();
     setIsLoading(true);
     resultService
-      .getResults(registerNo)
+      .getResults(registerNo, dob)
       .then((response) => {
         setResults(response.data);
         setIsLoading(false);
@@ -41,7 +42,7 @@ const Form = () => {
 
   const updateSemester = (semester, examDefId) => {
     resultService
-      .updateResults(registerNo, semester, examDefId, results)
+      .updateResults(registerNo, dob, semester, examDefId, results)
       .then((response) => {
         const newResults = response.data;
         setResults(newResults);
@@ -59,18 +60,22 @@ const Form = () => {
       {results.length === 0 ? (
         <form onSubmit={handleRegisterNo}>
           <h1>Enter your register number to find results</h1>
-          <div>
-            {/* <label htmlFor="registerNo">Enter your registration number: */}
-            <input
-              type="text"
-              value={registerNo}
-              // value="MAC21CS040"
-              placeholder="Register Number"
-              onChange={(e) => setRegisterNo(e.target.value.toUpperCase())}
-              required
-            />
-            {/* </label> */}
-          </div>
+          <input
+            type="text"
+            value={registerNo}
+            placeholder="Register Number"
+            onChange={(e) => setRegisterNo(e.target.value.toUpperCase())}
+            required
+          />
+          <input
+            type="text"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => (e.target.type = "text")}
+            placeholder="Date of Birth (YYYY-MM-DD)"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+            required
+          />
           <div className={styles.buttonDiv}>
             <button
               className={styles.resultButton}
