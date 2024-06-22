@@ -7,8 +7,15 @@ const { AllResults, ExamDefId } = require("./mongo");
 
 resultsRouter.post("/", async (request, response) => {
   const { registerNo, dob } = request.body;
-  if (registerNo === "" || registerNo === undefined) {
-    return response.status(400).json({ error: "register number is missing" });
+  if (
+    registerNo === "" ||
+    registerNo === undefined ||
+    dob === "" ||
+    dob === undefined
+  ) {
+    return response
+      .status(400)
+      .json({ error: "register number or dob missing" });
   }
   const batchYear = extractBatch(registerNo);
   if (batchYear === undefined || !batchYear) {
@@ -59,7 +66,7 @@ resultsRouter.post("/", async (request, response) => {
         try {
           const body = {
             registerNo,
-            dob,
+            dateOfBirth: dob,
             examDefId: String(id),
             schemeId: "1",
           };
@@ -88,9 +95,12 @@ resultsRouter.post("/", async (request, response) => {
 });
 
 resultsRouter.post("/update", async (request, response) => {
-  const { registerNo, semester, examDefId, oldResult } = request.body;
+  const { registerNo, dob, semester, examDefId, oldResult } = request.body;
   if (registerNo === "" || registerNo === undefined) {
     return response.status(400).json({ error: "register number is missing" });
+  }
+  if (dob === "" || dob === undefined) {
+    return response.status(400).json({ error: "dob is missing" });
   }
   if (semester === "" || semester === undefined) {
     return response.status(400).json({ error: "semester is missing" });
@@ -115,7 +125,7 @@ resultsRouter.post("/update", async (request, response) => {
       try {
         const body = {
           registerNo: registerNo,
-          dob: "",
+          dateOfBirth: dob,
           examDefId: String(id),
           schemeId: "1",
         };
