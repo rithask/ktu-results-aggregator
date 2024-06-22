@@ -26,40 +26,7 @@ resultsRouter.post("/", async (request, response) => {
     const examDefIds = await ExamDefId.findOne({ batchYear });
     const allExamDefIds = await AllResults.find({ program: "B.Tech" });
     if (examDefIds === null) {
-      let examDefIdFound = [];
-      const results = [];
-      for (let i = 0; i < 1500; i++) {
-        try {
-          const body = {
-            registerNo,
-            dob,
-            examDefId: String(i),
-            schemeId: "1",
-          };
-          const apiResponse = await fetch(RESULT_URL, {
-            method: "POST",
-            body: JSON.stringify(body),
-            headers: { "Content-Type": "application/json" },
-          });
-          const data = await apiResponse.json();
-          if (apiResponse.status === 200) {
-            examDefIdFound.push(String(i));
-            results.push(data);
-            console.log(String(i));
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
-      const newData = new ExamDefId({
-        batchYear: batchYear,
-        examDefId: examDefIdFound,
-      });
-      newData.save();
-
-      const cleanedData = cleanData(results);
-      response.json(cleanedData);
+      return response.status(400).json({ error: "no data found" });
     } else {
       const results = [];
       for (const id of examDefIds.examDefId) {
