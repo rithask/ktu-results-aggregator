@@ -1,5 +1,5 @@
 > [!WARNING]  
-> This app has been sunsetted since KTU made it really hard to use their API. They were not happy with the third party using their API. Thank you for all the love and support you have shown to this project ❤️.
+> This app has been sunsetted because KTU made it really difficult to use their API. They were not happy with the third party using it. Thank you for all the love and support you have shown to this project ❤️.
 
 # KTU Grade Aggregator
 
