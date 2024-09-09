@@ -1,5 +1,5 @@
 > [!NOTE]
-> I have decided to rebuild the app with new logic. The new app won't be relying on KTU's API which means no automatic result fetching from KTU.
+> I have decided to rebuild the app with new logic. The new app won't be relying on KTU's API which means no automatic result fetching from KTU. The old code have been moved to (v1.0)[https://github.com/rithask/ktu-results-aggregator/tree/v1.0] branch.
 
 # KTU Grade Aggregator
 
