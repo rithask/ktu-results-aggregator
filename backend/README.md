@@ -1,1 +1,0 @@
-# ktu-grade-aggregator
