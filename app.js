@@ -2,6 +2,7 @@ const config = require("./utils/config");
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const signUpRouter = require("./controllers/signup");
 
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
@@ -22,6 +23,8 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use(middleware.requestLogger);
+
+app.use("/api/sign-up", signUpRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
